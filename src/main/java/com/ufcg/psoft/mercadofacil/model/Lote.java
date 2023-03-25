@@ -11,5 +11,5 @@ public class Lote {
 
     private Produto produto;
 
-    private int numberoDeItens;
+    private int numeroDeItens;
 }
