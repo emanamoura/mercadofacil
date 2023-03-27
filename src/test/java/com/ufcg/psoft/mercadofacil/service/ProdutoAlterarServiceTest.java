@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -58,6 +59,17 @@ public class ProdutoAlterarServiceTest {
         Produto resultado = driver.alterar(produto);
         // Assert
         assertEquals("Nome Produto Alterado", resultado.getNome());
+    }
 
+    @Test
+    @DisplayName("Quando o preço é menor ou igual a zero")
+    void precoMenorIgualAZero() {
+        produto.setPreco(0.00);
+        Produto resultado = driver.alterar(produto);
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+        assertEquals("Preço inválido", thrown.getMessage());
     }
 }

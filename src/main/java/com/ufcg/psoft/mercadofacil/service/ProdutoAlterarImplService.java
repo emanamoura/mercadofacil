@@ -12,6 +12,9 @@ public class ProdutoAlterarImplService implements  ProdutoAlterarService{
     ProdutoRepository<Produto, Long> produtoRepository;
 
     public Produto alterar(Produto produto) {
+        if(produto.getPreco() <= 0) {
+            throw new RuntimeException("Preço inválido");
+        }
         return this.produtoRepository.update(produto);
     }
 
