@@ -27,23 +27,4 @@ public class ProdutoAlterarImplService implements  ProdutoAlterarService{
         return this.produtoRepository.update(produto);
     }
 
-    private boolean validarCodigoDeBarra(String codigoDeBarras) {
-        int somaImpares = 0;
-        int somaPares = 0;
-        String[] array = codigoDeBarras.split("");
-        for(int i = 0; i < codigoDeBarras.length() - 2; i++) {
-            int numero = Integer.parseInt(array[i]);
-            if(i % 2 == 0) {
-                somaPares += numero;
-            } else {
-                somaImpares += numero;
-            }
-        }
-        int multi = somaImpares * 3;
-        int soma = multi + somaPares;
-        int digitoVerificador = 0;
-    }
-
-
-
 }
