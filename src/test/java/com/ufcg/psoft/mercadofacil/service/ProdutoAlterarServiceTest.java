@@ -31,7 +31,7 @@ public class ProdutoAlterarServiceTest {
         Mockito.when(produtoRepository.find(10L))
                 .thenReturn(Produto.builder()
                         .id(10L)
-                        .codigoBarra("7899137500104")
+                        .codigoBarra("4012345678901")
                         .nome("Produto Dez")
                         .fabricante("Empresa Dez")
                         .preco(450.00)
@@ -41,7 +41,7 @@ public class ProdutoAlterarServiceTest {
         Mockito.when(produtoRepository.update(produto))
                 .thenReturn(Produto.builder()
                         .id(10L)
-                        .codigoBarra("7899137500104")
+                        .codigoBarra("7896649000050")
                         .nome("Nome Produto Alterado")
                         .fabricante("Nome Fabricante Alterado")
                         .preco(500.00)
@@ -61,10 +61,24 @@ public class ProdutoAlterarServiceTest {
     }
 
     @Test
-    @DisplayName("Quando o preço é menor ou igual a zero")
-    void precoMenorIgualAZero() {
+    @DisplayName("Quando o preço é menor que zero")
+    void precoMenorQueZero() {
 
-        produto.setPreco(0.0);
+        produto.setPreco(-1);
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+
+        assertEquals("Preco invalido!", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Quando o preço igual zero")
+    void precoIgualZero() {
+
+        produto.setPreco(0);
 
         RuntimeException thrown = assertThrows(
                 RuntimeException.class,
@@ -88,9 +102,74 @@ public class ProdutoAlterarServiceTest {
     }
 
     @Test
-    @DisplayName("Quando atributo codigo de barrars é nulo")
+    @DisplayName("Quando atributo nome é vazio")
+    void modificarComValorDeNomeVazio() {
+        produto.setNome("");
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+
+        assertEquals("Insira uma valor de nome valido!", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Quando atributo nome é tem apenas espaços")
+    void modificarComValorDeNomeApenasComEspacos() {
+        produto.setNome("     ");
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+
+        assertEquals("Insira uma valor de nome valido!", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Quando atributo codigo de barras é nulo")
     void modificarComValorDeCodigoDeBarrasNulo() {
         produto.setCodigoBarra(null);
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+
+        assertEquals("Insira uma valor de codigo de barras valido!", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Quando atributo codigo de barras é vazio")
+    void modificarComValorDeCodigoDeBarrasVazio() {
+        produto.setCodigoBarra("");
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+
+        assertEquals("Insira uma valor de codigo de barras valido!", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Quando atributo codigo de barras tem apenas espaços vazios")
+    void modificarComValorDeCodigoDeBarrasTemApenasEspacos() {
+        produto.setCodigoBarra("  ");
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+
+        assertEquals("Insira uma valor de codigo de barras valido!", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Quando atributo codigo de barras tem apenas espaços vazios com valor igual a 13")
+    void modificarComValorDeCodigoDeBarrasTemApenasEspacosComValorIgualA13() {
+        produto.setCodigoBarra("             ");
 
         RuntimeException thrown = assertThrows(
                 RuntimeException.class,
@@ -114,7 +193,33 @@ public class ProdutoAlterarServiceTest {
     }
 
     @Test
-    @DisplayName("Quando o código de barrar é valido ,é possível alterar o produto")
+    @DisplayName("Quando atributo fabricante é vazio")
+    void modificarComValorDeFabricanteVazio() {
+        produto.setFabricante("");
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+
+        assertEquals("Insira uma valor de fabricante valido!", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Quando atributo fabricante é apenas com espaços")
+    void modificarComValorDeFabricanteApenasComEspacos() {
+        produto.setFabricante("   ");
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+
+        assertEquals("Insira uma valor de fabricante valido!", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Quando o código de barras é valido ,é possível alterar o produto")
     void alterarProdutoComCodigoDeBarrasValido() {
         produto.setNome("Produto alterado");
         driver.alterar(produto);
@@ -128,17 +233,28 @@ public class ProdutoAlterarServiceTest {
                 RuntimeException.class,
                 () -> driver.alterar(produto)
         );
-        assertEquals("Codigo de barras invalido", thrown.getMessage());
+        assertEquals("Insira uma valor de codigo de barras valido!", thrown.getMessage());
     }
 
     @Test
-    @DisplayName("Quando o código de barras é menor que 13")
+    @DisplayName("Quando o tamanho do código de barras é menor que 13")
     void alterarProdutoComCodigoDeBarrasMenorQueTreze() {
         produto.setCodigoBarra("123456789123");
         RuntimeException thrown = assertThrows(
                 RuntimeException.class,
                 () -> driver.alterar(produto)
         );
-        assertEquals("Codigo de barras nao tem tamanho correto", thrown.getMessage());
+        assertEquals("Insira uma valor de codigo de barras valido!", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Quando o tamanho do código de barras é menor que 13")
+    void alterarProdutoComCodigoDeBarrasTemCaracteresAlfabeticos() {
+        produto.setCodigoBarra("12345678912aa");
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> driver.alterar(produto)
+        );
+        assertEquals("Insira uma valor de codigo de barras valido!", thrown.getMessage());
     }
 }
