@@ -12,16 +12,17 @@ public class ProdutoAlterarImplService implements  ProdutoAlterarService{
     ProdutoRepository<Produto, Long> produtoRepository;
 
     public Produto alterar(Produto produto) {
+        ValidarCodigoDeBarrasService validarCodigoDeBarrasService = new ValidarCodigoDeBarrasImplService();
         if(produto.getPreco() <= 0) {
             throw new RuntimeException("Preco invalido!");
         }
-        if(produto.getNome() == null) {
+        if(produto.getNome() == null || produto.getNome().isBlank()) {
             throw new RuntimeException("Insira uma valor de nome valido!");
         }
-        if(produto.getCodigoBarra() == null) {
+        if(!validarCodigoDeBarrasService.validarCodigoDeBarras(produto.getCodigoBarra())) {
             throw new RuntimeException("Insira uma valor de codigo de barras valido!");
         }
-        if(produto.getFabricante() == null) {
+        if(produto.getFabricante() == null || produto.getFabricante().isBlank()) {
             throw new RuntimeException("Insira uma valor de fabricante valido!");
         }
         return this.produtoRepository.update(produto);
