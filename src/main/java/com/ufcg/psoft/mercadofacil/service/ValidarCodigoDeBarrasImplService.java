@@ -1,27 +1,26 @@
 package com.ufcg.psoft.mercadofacil.service;
 
-public class ValidarCodigoDeBarrasImplService implements ValidarCodigoDeBarrarService {
-    public boolean validarCodigoDeBarra(String codigoDeBarras) {
-        int somaImpares = 0;
-        int somaPares = 0;
-        String[] array = codigoDeBarras.split("");
-        int ultimoDigitoCodigo = Integer.parseInt(array[array.length - 1]);
-        for(int i = 0; i < codigoDeBarras.length() - 2; i++) {
-            int numero = Integer.parseInt(array[i]);
-            if(i % 2 == 0) {
-                somaPares += numero;
-            } else {
-                somaImpares += numero;
-            }
-        }
-        int multi = somaImpares * 3;
-        int soma = multi + somaPares;
-        int ultimoDigito = soma % 10;
-        int digitoVerificador = 10 - ultimoDigito;
-        if(digitoVerificador > 5) {
-            digitoVerificador = digitoVerificador - 5;
-        }
-        return digitoVerificador == ultimoDigitoCodigo;
+import org.springframework.stereotype.Service;
 
+@Service
+public class ValidarCodigoDeBarrasImplService implements ValidarCodigoDeBarrasService {
+    public boolean validarCodigoDeBarras(String codigoDeBarras) {
+        if (codigoDeBarras == null || codigoDeBarras.length() != 13) {
+            return false;
+        }
+
+        try {
+            int soma = 0;
+            for (int i = 0; i < 12; i += 2) {
+                soma += Integer.parseInt(codigoDeBarras.substring(i, i + 1));
+            }
+            for (int i = 1; i < 12; i += 2) {
+                soma += 3 * Integer.parseInt(codigoDeBarras.substring(i, i + 1));
+            }
+            int digitoVerificador = (10 - (soma % 10)) % 10;
+            return digitoVerificador == Integer.parseInt(codigoDeBarras.substring(12));
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
